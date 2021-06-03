@@ -13,10 +13,16 @@ namespace Joe.MVC.Controllers
     public class MoviesController : Controller
     {
         private readonly MvcMovieContext _context;
+        private List<Tag> _tags = new List<Tag>
+        {
+            new Tag{ Id = 1, Name = "A"},
+            new Tag{ Id = 2, Name = "B"},
+        };
 
         public MoviesController(MvcMovieContext context)
         {
             _context = context;
+
         }
 
         // GET: Movies
@@ -74,10 +80,17 @@ namespace Joe.MVC.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Create
+        // public IActionResult Create()
+        // {
+        //     var vm = new MovieViewModel();
+        //     return View(vm);
+        // }
+        [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var vm = new MovieViewModel();
+            vm.SelectTags = new SelectList(_tags, "Id", "Name");
+            return View(vm);
         }
 
         // POST: Movies/Create
@@ -85,15 +98,43 @@ namespace Joe.MVC.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
+        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating,Tags,TagId,SelectTags")] MovieViewModel vm)
         {
+            if (vm.TagId > 0)
+            {
+                var tag = _tags.FirstOrDefault(t => t.Id == vm.TagId);
+
+
+                vm.Tags.Add(tag);
+                vm.TagId = 0;
+                foreach (var vmTag in vm.Tags)
+                {
+                    var removeTag = _tags.FirstOrDefault(t => t.Id == vmTag.Id);
+                    _tags.Remove(removeTag);
+                }
+
+                vm.SelectTags = new SelectList(_tags, "Id", "Name");
+
+                return View(vm);
+            }
+
             if (ModelState.IsValid)
             {
+                var movie = new Movie
+                {
+                    Id = vm.Id,
+                    Title = vm.Title,
+                    Price = vm.Price,
+                    Genre = vm.Genre,
+                    Tags = string.Join(",", vm.Tags.Select(t => t.Name).ToList()),
+                    ReleaseDate = vm.ReleaseDate,
+                    Rating = vm.Rating
+                };
                 _context.Add(movie);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(movie);
+            return View(vm);
         }
 
         // GET: Movies/Edit/5

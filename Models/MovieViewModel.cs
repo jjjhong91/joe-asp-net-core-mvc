@@ -2,11 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Joe.MVC.Models
 {
-    public class Movie
+    public class MovieViewModel
     {
+        public MovieViewModel()
+        {
+            Tags = new List<Tag>();
+        }
         public int Id { get; set; }
 
         [StringLength(60, MinimumLength = 3)]
@@ -24,9 +29,10 @@ namespace Joe.MVC.Models
 
         [RegularExpression(@"^[A-Z]+[a-zA-Z0-9""'\s-]*$"), StringLength(5)]
         public string Rating { get; set; }
-        
-        public string Tags { get; set; }
-        
+
+        public List<Tag> Tags { get; set; }
+        public int TagId { get; set; }
+        public SelectList SelectTags { get; set; }
         
     }
 }
