@@ -54,8 +54,12 @@
                     Add
                 </button>
             </div>
+                       
 
-            <table class="table">
+            @* @await Html.PartialAsync("_TagPartial", @Model.TagViewModel) *@
+            @{Html.RenderPartial("_TagPartial", Model.TagVM);}
+
+            @* <table class="table">
                 <thead>
                     <tr>
                         <th>
@@ -75,7 +79,7 @@
                         </tr>
                     }
                 </tbody>
-            </table>
+            </table> *@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

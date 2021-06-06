@@ -7,16 +7,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Joe.MVC.Data;
 using Joe.MVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Joe.MVC.Controllers
 {
+    [Authorize]
     public class MoviesController : Controller
     {
         private readonly MvcMovieContext _context;
-        private List<Tag> _tags = new List<Tag>
+        private List<TagItemViewModel> _tags = new List<TagItemViewModel>
         {
-            new Tag{ Id = 1, Name = "A"},
-            new Tag{ Id = 2, Name = "B"},
+            new TagItemViewModel{ Id = 1, Name = "A"},
+            new TagItemViewModel{ Id = 2, Name = "B"},
         };
 
         public MoviesController(MvcMovieContext context)
@@ -24,13 +26,6 @@ namespace Joe.MVC.Controllers
             _context = context;
 
         }
-
-        // GET: Movies
-        // public async Task<IActionResult> Index()
-        // {
-        //     return View(await _context.Movie.ToListAsync());
-        // }
-
 
         // GET: Movies
         public async Task<IActionResult> Index(string movieGenre, string searchString)
@@ -80,17 +75,14 @@ namespace Joe.MVC.Controllers
             return View(movie);
         }
 
-        // public IActionResult Create()
-        // {
-        //     var vm = new MovieViewModel();
-        //     return View(vm);
-        // }
         [HttpGet]
         public IActionResult Create()
         {
-            var vm = new MovieViewModel();
-            vm.SelectTags = new SelectList(_tags, "Id", "Name");
-            return View(vm);
+            var tagViewModel = new TagViewModel();
+            var movieViewModel = new MovieViewModel();
+            movieViewModel.SelectTags = new SelectList(_tags, "Id", "Name");
+            movieViewModel.TagVM = tagViewModel;
+            return View(movieViewModel);
         }
 
         // POST: Movies/Create
@@ -104,10 +96,13 @@ namespace Joe.MVC.Controllers
             {
                 var tag = _tags.FirstOrDefault(t => t.Id == vm.TagId);
 
+                if(vm.TagVM == null)
+                    vm.TagVM = new TagViewModel();
 
-                vm.Tags.Add(tag);
+
+                vm.TagVM.Tags.Add(tag);
                 vm.TagId = 0;
-                foreach (var vmTag in vm.Tags)
+                foreach (var vmTag in vm.TagVM.Tags)
                 {
                     var removeTag = _tags.FirstOrDefault(t => t.Id == vmTag.Id);
                     _tags.Remove(removeTag);
@@ -126,7 +121,7 @@ namespace Joe.MVC.Controllers
                     Title = vm.Title,
                     Price = vm.Price,
                     Genre = vm.Genre,
-                    Tags = string.Join(",", vm.Tags.Select(t => t.Name).ToList()),
+                    Tags = string.Join(",", vm.TagVM.Tags.Select(t => t.Name).ToList()),
                     ReleaseDate = vm.ReleaseDate,
                     Rating = vm.Rating
                 };

@@ -1,0 +1,22 @@
+@model Joe.MVC.Models.TagViewModel
+<table class="table" asp-for="@Model.Tags">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Tags[0].Name)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (var i = 0; i < Model.Tags.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Tags[i].Name)
+                    <input type="hidden" asp-for="@Model.Tags[i].Id" />
+                    <input type="hidden" asp-for="@Model.Tags[i].Name" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

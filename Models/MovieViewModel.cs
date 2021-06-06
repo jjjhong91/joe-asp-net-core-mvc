@@ -10,7 +10,7 @@ namespace Joe.MVC.Models
     {
         public MovieViewModel()
         {
-            Tags = new List<Tag>();
+            // Tags = new List<TagItemViewModel>();
         }
         public int Id { get; set; }
 
@@ -30,7 +30,10 @@ namespace Joe.MVC.Models
         [RegularExpression(@"^[A-Z]+[a-zA-Z0-9""'\s-]*$"), StringLength(5)]
         public string Rating { get; set; }
 
-        public List<Tag> Tags { get; set; }
+        // public List<TagItemViewModel> Tags { get; set; }
+        public TagViewModel TagVM { get; set; }
+        
+        
         public int TagId { get; set; }
         public SelectList SelectTags { get; set; }
         
