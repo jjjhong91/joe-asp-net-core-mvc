@@ -70,7 +70,7 @@ namespace Joe.MVC
                     config.Scope.Add("openid");
                     config.Scope.Add("offline_access");
 
-                    config.RequireHttpsMetadata = false;
+                    
 
                 });
         }
